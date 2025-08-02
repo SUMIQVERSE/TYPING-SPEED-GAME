@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8" />
+    <title>TYPING SPEED TEST</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+        h1 {
+        margin-bottom: 10px;
+        }
+        #paragraph {
+        font-size: 18px;
+        margin: 20px auto;
+        max-width: 800px;
+        color: #0f0;
+        background: #222;
+        padding: 15px;
+        border-radius: 8px;
+        }
+        #input {
+        width: 90%;
+        padding: 10px;
+        font-size: 18px;
+        margin-bottom: 10px;
+        border: none;
+        border-radius: 5px;
+        }
+        #stats {
+        margin-top: 15px;
+        font-size: 18px;
+        }
+        button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        margin-top: 10px;
+        cursor: pointer;
+        }
+        #timeUp {
+        font-size: 20px;
+        color: red;
+        margin-top: 10px;
+        }
+    </style>
+    </head>
+    <body>
+        <h1>⌨️ Typing Speed Test</h1>
+
+        <div id="paragraph">Loading paragraph...</div>
+        <input type="text" id="input" placeholder="Start typing here..." disabled>
+        <div id="stats">
+        ⏳ Time Left: <span id="timer">60</span>s |
+        WPM: <span id="wpm">0</span> |
+        Accuracy: <span id="accuracy">0</span>% |
+        🏆 Best WPM: <span id="bestWPM">0</span>
+    </div>
+    <div id="timeUp"></div>
+    <button onclick="startGame()">🔁 Restart</button>
+
+    <script>
+        const paragraphs = [
+            "Learning to code is like learning a new language. It takes practice, patience, and a lot of problem-solving. But once you start building real-world projects, the feeling of accomplishment is unbeatable. Typing fast and accurately helps programmers write code more efficiently and boosts productivity.",
+            "Technology continues to evolve rapidly, and programming is at the heart of it all. From mobile apps to websites and even smart devices, code powers the world. Developers must constantly improve their typing and logical skills to keep up with the fast-paced digital era.",
+            "Success in any field comes from consistency and practice. In programming, the more you code, the better you get. The same goes for typing. Improving your typing speed and accuracy not only helps in coding but also enhances your overall digital fluency."
+        ];
+
+        const input = document.getElementById("input");
+        const paragraphEl = document.getElementById("paragraph");
+        const timerEl = document.getElementById("timer");
+        const wpmEl = document.getElementById("wpm");
+        const accuracyEl = document.getElementById("accuracy");
+        const bestWPMEl = document.getElementById("bestWPM");
+        const timeUpEl = document.getElementById("timeUp");
+
+        let countdown = 60;
+        let interval;
+        let currentParagraph = "";
+        let started = false;
+        let totalTyped = 0;
+        let correctTyped = 0;
+
+        let bestWPM = localStorage.getItem("bestWPM") || 0;
+        bestWPMEl.textContent = bestWPM;
+
+        function startGame() {
+            input.value = "";
+            input.disabled = false;
+            input.focus();
+            countdown = 60;
+            timerEl.textContent = countdown;
+            wpmEl.textContent = "0";
+            accuracyEl.textContent = "0";
+            totalTyped = 0;
+            correctTyped = 0;
+            started = false;
+            timeUpEl.textContent = "";
+            clearInterval(interval);
+
+            currentParagraph = paragraphs[Math.floor(Math.random() * paragraphs.length)];
+            paragraphEl.textContent = currentParagraph;
+        }
+
+    input.addEventListener("input", () => {
+        if (!started) {
+            started = true;
+            interval = setInterval(() => {
+                countdown--;
+                timerEl.textContent = countdown;
+
+            if (countdown <= 0) {
+                clearInterval(interval);
+                input.disabled = true;
+                showFinalStats();
+            }
+            }, 1000);
+        }
+
+        const typed = input.value;
+        totalTyped = typed.length;
+        correctTyped = 0;
+
+        for (let i = 0; i < typed.length; i++) {
+            if (typed[i] === currentParagraph[i]) {
+                correctTyped++;
+            }
+        }
+
+        const accuracy = totalTyped > 0 ? Math.round((correctTyped / totalTyped) * 100) : 0;
+        accuracyEl.textContent = accuracy;
+    });
+
+    function showFinalStats() {
+        const wordsTyped = totalTyped / 5;
+        const wpm = Math.round(wordsTyped);
+        wpmEl.textContent = wpm;
+        timeUpEl.textContent = "⏰ Time’s up!";
+
+        if (wpm > bestWPM) {
+            bestWPM = wpm;
+            localStorage.setItem("bestWPM", bestWPM);
+            bestWPMEl.textContent = bestWPM;
+        }
+    }
+
+    startGame();
+    </script>
+    </body>
+</html>
